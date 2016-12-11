@@ -1,0 +1,65 @@
+{% extends 'templates/app.twig' %}
+
+{% block modal %}
+<!-- Modal -->
+     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+         <div class="modal-dialog" role="document">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                     <h4 class="modal-title" id="myModalLabel">Add To Cart</h4>
+                 </div>
+                 <div class="modal-body">
+                     ...
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                     <a href="{{ path_for('cart.index') }}" class="btn btn-primary">View Cart</a>
+                 </div>
+             </div>
+	    </div>
+    </div>
+ {% endblock %}
+
+{% block content %}
+	<div class ="row">
+		<div class="col-md-4">
+			<img src="{{ product.image }}" alt="{{ product.title }} image" class="thumbnail img-responsive">
+		</div>
+		<div class ="col-md-8">
+			{% if product.hasLowStock() %}
+				<span class="label label-warning">Low stock</span>
+			{% endif %}
+
+			{% if product.outOfStock() %}
+				<span class="label label-danger">Out of stock</span>
+			{% endif %}
+
+			<h3>{{ product.title }}</h3>
+			<p>{{ product.description }}</p>
+
+			{% if product.inStock() %} 
+			<a href="{{ path_for('cart.add', { slug: product.slug, quantity: 1 }) }}" id="addToCart" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">Add to cart</a>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+     <script>
+         $('a#addToCart').attr("href", '#myModal');
+         $('#myModal').on('show.bs.modal', function (event) {
+             $.ajax({
+                 type: "POST",
+                 url: "{{ path_for('cart.ajaxAdd', { slug: product.slug, quantity: 1 }) }}",
+                 success: function(response) {
+                     $('#itemCount').text(response);
+                     $('.modal-body').html('<p>{{ product.title }}<br>${{ product.price | number_format(2) }}</p>');
+                 },
+                 error: function () {
+                     $('.modal-body').html('<p>There was a problem adding the item to the cart.</p>');
+                 }
+             });
+         });
+     </script>
+ {% endblock %}

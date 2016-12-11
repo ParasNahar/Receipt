@@ -1,0 +1,19 @@
+{% extends 'templates/base.twig' %}
+
+{% block head %}
+ <head>
+     {% include 'templates/partials/head.twig' %}
+ </head>
+{% endblock %}
+
+    {% block body %}
+ <body>
+     {% include 'templates/partials/navigation.twig' %}
+     <div class="container">
+         {% block modal %}{% endblock %}
+         {% block content %}{% endblock %}
+     </div>
+     {% include 'templates/partials/javascript.twig' %}
+     {% block scripts %}{% endblock %}
+ </body>
+ {% endblock %}
